@@ -1,0 +1,123 @@
+# DF-HeyLou-Revenue-Optimizer Configuration [CRUX-MK]
+# Welle-40 Foundation-DF: Profit-Layer #1 (Revenue-Optimizer)
+
+df_id: DF-HEYLOU-REVENUE-OPT
+df_name: heylou-revenue-optimizer
+version: 0.1.0-SKELETON
+status: PRE-PRODUCTION-CONDITIONAL
+crux-mk: true
+
+# === K_0-Touch (Welle-40 Profit-Layer) ===
+k0_touch: true
+k0_caveats:
+  - "Anti-OTA-Strategie (Pricing-Decisions wirken auf Revenue-Stream)"
+  - "Bayesian-Pricing-Output kann Hotelier-Revenue direkt beeinflussen"
+phronesis_required: true
+sandbox_default: true
+
+description: |
+  RMS-aequivalent fuer 9OS-Hotels. Bayesian-Yield-Management + Demand-Forecasting
+  + Competitor-Price-Tracking via W37 cross_ota_rate_sync.
+  Pipeline: get_demand → forecast → competitor-check → bayesian-recommend → audit.
+
+# === Tier-2 Pflicht-Check ===
+tier_2_check:
+  lambda_per_month_estimate: 600  # 1 Hotel x 20 Runs/Tag
+  narrow_scope: "Yield-Forecast + Demand + Competitor-Tracking + Pricing-Recommendation"
+  determinism: 0.75  # Bayesian-Posteriors deterministisch bei festem Seed
+  rollback_seconds: 30
+  test_coverage_target: 0.85
+  k0_protected: false  # K_0-Touch = TRUE!
+  q0_measurable: true
+  escalation_after_n_fails: 3
+  rho_budget_eur_day: 0  # Sandbox-Mode marginal-cost 0
+  audit_trail: branch-hub/audit/df-heylou-revenue-opt.jsonl
+
+# === K11-K16 ===
+k11_cascade_containment:
+  cascade_isolation: hard
+  failure_blast_radius: 0
+  dependency_dlq_strategy: "Per-Hotel DLQ; Hotel-Failure isolated"
+
+k12_distillation_resistenz:
+  output_feeds_into_training: false
+  provenance_required_in_output: true
+  non_llm_validation_layer: bayesian-statistical-model
+  pii_scrubbing_enabled: true
+
+k13_independent_ground_truth:
+  external_anchor_type: external_api_source
+  external_anchor_validation_frequency: "per Pricing-Recommendation"
+  pre_action_domain_check:
+    env_tag: "dev/staging/prod check pre-pricing"
+    mount_point: "branch-hub Path + Hotel-ID-Whitelist"
+    network_region: "OTA-API-Endpoints fixed list"
+  pre_action_backup_check:
+    backup_status: "previous pricing-decisions persistent in audit"
+    replication_lag: "n/a"
+  pre_action_blast_radius_check:
+    blast_radius: "1 Hotel pro Run"
+    reversibility_class: "state-only (Recommendation, not auto-applied to PMS)"
+
+k14_human_override_decay:
+  override_complexity: single_command
+  override_documentation_freshness_days: 30
+  martin_review_cadence: "weekly Pricing-Output-Review"
+  bus_factor_handover_drilled: false
+
+k15_entropy_budget:
+  entropy_added_loc_estimate: 950
+  entropy_added_concepts:
+    - BayesianYieldRecommendation
+    - DemandForecast
+    - CompetitorPriceSnapshot
+    - YieldPosterior
+  entropy_justified_by_rho: "+EUR 30-60k/J Year-1 Pilot, +EUR 200-400k/J Year-3 5-Hotel-Skaling"
+  entropy_subtractive_potential: "Ersetzt extern-IDeaS-Sub (-30k EUR/J)"
+
+k16_concurrent_spawn_mutex:
+  concurrent_spawn_protection: both
+  lock_dir: /tmp/df-heylou-revenue-opt.lock
+  lock_stale_age_h: 6
+  engine_pgrep_check: true
+  lock_release_on: EXIT_INT_TERM
+
+# === LC1-LC5 Lose-Coupling ===
+lose_coupling:
+  LC1_graceful_degradation:
+    degradation_modes:
+      - full              # W37 cross_ota_rate_sync + DF-86 demand-data
+      - degraded_w37      # ohne Competitor-Tracking, only internal-demand
+      - degraded_demand   # ohne Demand-Forecast, only Bayesian-Prior
+      - standalone        # nur statisches Bayesian-Pricing
+    degradation_test_required: true
+  LC2_direct_mode:
+    direct_mode_available: true
+    direct_mode_capability: 0.60
+    direct_mode_trigger: "W37 cross_ota_rate_sync unreachable >30s"
+  LC3_circuit_breaker:
+    circuit_breaker_timeout_s: 30
+    circuit_breaker_open_threshold: 3
+    circuit_breaker_half_open_test_interval_s: 300
+  LC4_failure_isolation:
+    state_externalization: true
+    idempotent_operations: true
+    dependency_dlq_separate: true
+  LC5_health_check:
+    health_check_dependencies: []
+    health_check_degraded_score: 0.6
+    health_check_endpoint_or_file: "branch-hub/state/df-heylou-revenue-opt-health.json"
+
+# === ENV-Vars (Pflicht per env-var-gated-real-integration-default.md) ===
+env_vars:
+  DF_HEYLOU_REVENUE_OPT_REAL_ENABLED:
+    default: false
+    description: "Real-Pricing-Mode (Pflicht: PHRONESIS_TICKET)"
+  DF_HEYLOU_REVENUE_OPT_SANDBOX_MODE:
+    default: true
+    description: "Sandbox-Default; Hard-Production-Toggle = PHRONESIS_TICKET"
+  PHRONESIS_TICKET:
+    required_for_real: true
+    format: "PT-YYYY-MM-DD-NNN"
+
+[CRUX-MK]
