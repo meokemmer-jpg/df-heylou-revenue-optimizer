@@ -20,6 +20,26 @@ description: |
   + Competitor-Price-Tracking via W37 cross_ota_rate_sync.
   Pipeline: get_demand → forecast → competitor-check → bayesian-recommend → audit.
 
+# === Default-Action (per ausreden-schutz.md Schicht 2, Welle-47 Migration Batch-2) ===
+default_action:
+  description: "Bayesian-Yield-Management Pipeline: get_demand → forecast → competitor-check (W37 OTA-rate-sync) → bayesian-recommend → audit. Output: Pricing-Recommendation pro Hotel-Room-Date"
+  rho_per_run_eur: 200
+  rho_validation_source: unvalidated
+  block_gates:
+    - gate_id: K14
+      block_reason: "K_0-Touch (Pricing-Decisions auf Hotelier-Revenue-Stream): Phronesis-Required + sandbox_default=true"
+      false_block_cost_eur: 150
+      legitimate_block_condition: "Real-Pricing-Mode ohne PHRONESIS_TICKET ODER ohne 30-Tage-Sandbox-Validation"
+    - gate_id: K12
+      block_reason: "Bayesian-Output Provenance Pflicht (kein LLM-Pricing-Distillation in Training)"
+      false_block_cost_eur: 80
+      legitimate_block_condition: "Provenance fehlt im Output oder Bayesian-Posterior nicht reproduzierbar"
+    - gate_id: K13_PAV
+      block_reason: "Pre-Action-Verification: env_tag + competitor-data-source + blast_radius (Pricing-Race-Risk)"
+      false_block_cost_eur: 100
+      legitimate_block_condition: "env_tag=prod + Real-Competitor-API ohne Rate-Limit-Schutz"
+  graceful_degradation_path: "Sandbox-Mock-Pricing mit historischen-Demand-Daten, kein Real-Pricing-Push an PMS"
+
 # === Tier-2 Pflicht-Check ===
 tier_2_check:
   lambda_per_month_estimate: 600  # 1 Hotel x 20 Runs/Tag
