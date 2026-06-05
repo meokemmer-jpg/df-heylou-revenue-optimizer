@@ -1,4 +1,3 @@
-from __future__ import annotations
 
 # K12+K13+K16 Trinity-CONTRARIAN 2026-05-17 (Cross-LLM-validated)
 def k12_provenance(payload: bytes, key: bytes = b"df-trinity-contrarian-v1") -> dict:
@@ -34,6 +33,7 @@ Competitor-Tracking + Audit-Chain + Orchestrator + K_0-Schutz.
 [CRUX-MK]
 """
 
+from __future__ import annotations
 
 import os
 import sys

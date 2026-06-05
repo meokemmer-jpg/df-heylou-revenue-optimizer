@@ -1,0 +1,8 @@
+{
+  "df": "df-heylou-revenue-optimizer",
+  "ts": "2026-06-05T10:23:34.291219+00:00",
+  "ok": true,
+  "bytes": 3269,
+  "model": "qwen2.5:14b-instruct",
+  "duration_s": 243.1
+}
