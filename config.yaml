@@ -141,3 +141,8 @@ env_vars:
     format: "PT-YYYY-MM-DD-NNN"
 
 [CRUX-MK]
+K13_external_anchor_type: verified_web_sources
+K13_external_anchor_validation_frequency: per_anchor_run
+K13_external_anchor_count: 1
+K13_external_anchor_evidence: https://www.gastgewerbe-magazin.de/hotellerie-kennzahlen-2024-2025
+K13_anchored_ts: 2026-06-23T13:46:19.313582+00:00
