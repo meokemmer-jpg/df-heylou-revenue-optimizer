@@ -1,10 +1,10 @@
 {
   "df": "df-heylou-revenue-optimizer",
-  "ts": "2026-08-16T23:21:48.618548+00:00",
-  "maturity": "CODE",
-  "maturity_level": 3,
-  "evidence_grade": 2,
-  "grade_basis": "pytest-gruen (LLM-selbstgeschrieben), codex_verify=UNKNOWN -> max Grade-2 (CODE), nie TESTED/4",
+  "ts": "2026-08-17T23:23:51.381319+00:00",
+  "maturity": "TESTED",
+  "maturity_level": 4,
+  "evidence_grade": 3,
+  "grade_basis": "pytest-gruen + HOLDS-verifiziert, 0 externe Belege (consumed-Quittung/Real-Receipt) -> max Grade-3",
   "wargame_verdict": "CONDITIONAL",
   "crux": "[CRUX-MK]"
 }

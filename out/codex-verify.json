@@ -1,0 +1,5 @@
+{
+  "verdict": "HOLDS",
+  "reason": "Der Demand-Forecaster wird real ausgefuehrt und mit Gegenfaellen wie Juli vs. Januar, Freitag vs. Sonntag sowie gueltigem vs. ungueltigem Event-Boost auf unterschiedliche Outputs bzw. Exceptions geprueft.",
+  "ts": "2026-08-17T18:37:30.615409+00:00"
+}
